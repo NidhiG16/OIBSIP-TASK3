@@ -1,0 +1,161 @@
+<html>
+<head>
+  <link rel="stylesheet" href="todo.css">
+</head>
+<body>
+  <div id="edit-dialog" class="overlay">
+    <div class="dialog">
+      <h3>Edit Task</h3>
+      <label for="edited-title">Edited Title</label>
+      <input id="edited-title" type="text">
+      <label for="edited-desc">Edited Description</label>
+      <input id="edited-desc" type="text">
+      <button onclick="saveEditedTask()">Save</button>
+      <button onclick="cancelEdit()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="input">
+      <h1 style="margin-top: 0;">To-Do List</h1>
+      <div class="desc">
+        <label>Enter title</label><br>
+        <input id="title" type="text" required><br>
+      </div>
+      <div class="desc">
+        <label>Enter description</label><br>
+        <input id="short" type="text" style="height: 80px" required>
+      </div>
+      <button type="submit" style="width: 100%" onclick="addTask()">
+        Add task
+      </button>
+    </div>
+  </div>
+
+  <div id="task-list"></div>
+
+  <div>
+    <button onclick="displayCheckedTasks()">Show Checked Tasks</button>
+    <button onclick="clearCheckedTasks()">Clear Checked Tasks</button>
+  </div>
+
+  <div id="checked-tasks-list" style="display: none;"></div>
+
+  <script>
+    let taskList = [];
+    let count = 0;
+    let currentEditIndex = -1;
+
+    function addTask() {
+      count++;
+      const input = document.getElementById("title").value;
+      const input_desc = document.getElementById("short").value;
+
+      const taskItem = {
+        id: count,
+        title: input,
+        description: input_desc,
+      };
+
+      taskList.push(taskItem);
+      displayTasks();
+      clearInputFields();
+    }
+
+    function deleteTask(id) {
+      taskList = taskList.filter(task => task.id !== id);
+      displayTasks();
+    }
+
+    function editTask(index) {
+      currentEditIndex = index;
+      const editedTitle = document.getElementById("edited-title");
+      const editedDesc = document.getElementById("edited-desc");
+      editedTitle.value = taskList[index].title;
+      editedDesc.value = taskList[index].description;
+
+      document.getElementById("edit-dialog").style.display = "flex";
+    }
+
+    function saveEditedTask() {
+      const editedTitle = document.getElementById("edited-title").value;
+      const editedDesc = document.getElementById("edited-desc").value;
+
+      taskList[currentEditIndex].title = editedTitle;
+      taskList[currentEditIndex].description = editedDesc;
+
+      currentEditIndex = -1;
+      closeEditDialog();
+      displayTasks();
+    }
+
+    function cancelEdit() {
+      currentEditIndex = -1;
+      closeEditDialog();
+    }
+
+    function closeEditDialog() {
+      document.getElementById("edit-dialog").style.display = "none";
+    }
+
+    function displayTasks() {
+      const taskListContainer = document.getElementById("task-list");
+      taskListContainer.innerHTML = "";
+
+      taskList.forEach(task => {
+        const taskItem = document.createElement("div");
+        taskItem.classList.add("task-item");
+        taskItem.setAttribute("id", task.id);
+        taskItem.setAttribute("title",task.title);
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.addEventListener("change", () => {
+          const checkedTasks = Array.from(document.querySelectorAll('.task-item input[type="checkbox"]:checked'))
+            .map(checkbox => checkbox.parentElement.id);
+
+          const checkedTasksList = document.getElementById("checked-tasks-list");
+          checkedTasksList.textContent = checkedTasks,joine(" , ");
+        });
+
+        const taskTitle = document.createElement("a");
+        taskTitle.textContent = task.id + ". " + task.title;
+        const taskDesc = document.createElement("a");
+        taskDesc.textContent = task.description;
+
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", () => deleteTask(task.id));
+
+        const editButton = document.createElement("button");
+        editButton.textContent = "Edit";
+        editButton.addEventListener("click", () => editTask(task.id - 1));
+
+        taskItem.appendChild(checkbox);
+        taskItem.appendChild(taskTitle);
+        taskItem.appendChild(taskDesc);
+        taskItem.appendChild(deleteButton);
+        taskItem.appendChild(editButton);
+
+        taskListContainer.appendChild(taskItem);
+      });
+    }
+
+    function clearInputFields() {
+      document.getElementById("title").value = "";
+      document.getElementById("short").value = "";
+    }
+
+    function displayCheckedTasks() {
+      const checkedTasksList = document.getElementById("checked-tasks-list");
+      checkedTasksList.style.display = "block";
+    }
+
+    function clearCheckedTasks() {
+      const checkedTasksList = document.getElementById("checked-tasks-list");
+      checkedTasksList.textContent = "";
+      checkedTasksList.style.display = "none";
+      displayCheckedTasks();
+    }
+  </script>
+</body>
+</html>
