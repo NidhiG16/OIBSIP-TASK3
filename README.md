@@ -1,1 +1,1 @@
-# OIBSIP-TASK3
+This is an HTML page for a simple To-Do List application. Users can add tasks with titles and descriptions, delete tasks, and edit existing tasks. The page displays the list of tasks, allows users to check completed tasks, and has buttons to show and clear checked tasks. The tasks are stored in the `taskList` array, and the page uses JavaScript to handle the functionality and interactions. The CSS file "todo.css" is linked to style the elements.
